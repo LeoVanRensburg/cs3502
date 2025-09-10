@@ -21,11 +21,11 @@ int main ( int argc , char *argv []) {
 	    if (strcmp(argv[count], "-f") == 0) {
 		    strcpy(filename, argv[count + 1]);
 		    open_file = 1;
-		    printf("File name: %s\n", filename);
+		    // printf("File name: %s\n", filename);     // Writes to stdout which messes up consumer counting  
 	    }
 	    if (strcmp(argv[count], "-b") == 0) {
 		    buffer_size = atoi(argv[count + 1]);
-		    printf("Buffer size: %d\n", buffer_size);
+		    // printf("Buffer size: %d\n", buffer_size);        // Writes to stdout which messer up consumer counting
 	    }		
     }
 
@@ -33,7 +33,7 @@ int main ( int argc , char *argv []) {
     if (open_file) {
 	    input = fopen(filename, "r");
 	    if (input == NULL) {
-		    printf("The file doesn't exist or something");
+		    // printf("The file doesn't exist or something");       // Writes to stdout which messer up consumer counting
             return 1;
 	    }
     }
@@ -43,7 +43,15 @@ int main ( int argc , char *argv []) {
 
 
     // TODO : Read from input and write to stdout
+    int bytes_read;
+    while ((bytes_read = fread(buffer, 1, buffer_size, input)) > 0) {
+        fwrite(buffer, 1, bytes_read, stdout);
+    }
 
     // TODO : Cleanup
+    free(buffer);
+    if (input != stdin) {   // Makes sure that it only closes if file and not if no file was specified
+        fclose(input);
+    }
     return 0;
 }

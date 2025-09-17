@@ -32,7 +32,7 @@ int main () {
         // close ( pipe1 [1]) ; // Close write end of pipe1
         // close ( pipe2 [0]) ; // Close read end of pipe2
         // TODO : Read from parent , send responses
-        fprintf(stderr, "Hello world1!, process_id(pid) = %d \n",getpid());
+        // fprintf(stderr, "Hello world1!, process_id(pid) = %d \n",getpid());
         close (pipe1[1]);
         close (pipe2[0]);
 
@@ -45,9 +45,11 @@ int main () {
             buffer[bytes_read] = '\0';
             char received_message[buffer_size];
             snprintf(received_message, buffer_size, "Child received: %s", buffer);
+            printf("%s", received_message);
 
             write(pipe2[1], received_message, strlen(received_message));
         }
+        free(buffer);
 
     } else {
         // Parent process
@@ -56,7 +58,7 @@ int main () {
         // close ( pipe2 [1]) ; // Close write end of pipe2
         // TODO : Send messages , read responses
         // TODO : wait () for child
-        fprintf(stderr, "Hello world!, process_id(pid) = %d \n",getpid());
+        // fprintf(stderr, "Hello world!, process_id(pid) = %d \n",getpid());
         close (pipe1[0]);
         close (pipe2[1]);
         
@@ -65,9 +67,9 @@ int main () {
         int bytes_read;
         while (1) {
             // Takes message from user input to send
-            char message[100];
+            char message[buffer_size];
             fprintf(stderr, "Enter your message that you want to send to the child process: \n");
-            scanf("%s", message);
+            fgets(message, buffer_size, stdin);
 
             // Writes message to stdout
             write(pipe1[1], message, strlen(message));
@@ -75,9 +77,10 @@ int main () {
             ssize_t bytes_read = read(pipe2[0], buffer, buffer_size - 1);
             if (bytes_read > 0) {
                 buffer[bytes_read] = '\0';
-                printf("Parent received: %s\n", buffer);
+                printf("Parent received: %s", buffer);
             }
         }
+        free(buffer);
     }
 
     return 0;

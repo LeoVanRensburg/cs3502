@@ -18,6 +18,8 @@ void handle_sigusr1(int sig) {
 }
 
 int main ( int argc , char *argv [] ) {
+    clock_t start = clock () ;
+
     int max_lines = -1; // -1 means unlimited
     int verbose = 0;
     int count;
@@ -62,8 +64,11 @@ int main ( int argc , char *argv [] ) {
     fflush(stdout);     // Necessary to flush because stdout is buffered while stderr is not causing out of order printing. 
     free(line);
 
+    clock_t end = clock () ;
+    double cpu_time = (( double ) ( end - start ) ) / CLOCKS_PER_SEC ;
+
     // Print statistics to stderr
-    fprintf(stderr, "\nLines: %d, Characters: %d\n", line_count, char_count);
+    fprintf(stderr, "\nLines: %d, Characters: %d, Time: %f\n", line_count, char_count, cpu_time);
 
     return 0;
 }

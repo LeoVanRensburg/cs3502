@@ -89,6 +89,7 @@ int main() {
 
     for (int i = 0; i < NUM_ACCOUNTS; i++) {
         printf("Final balance of account %d: %.2f\n", i, accounts[i].balance);
+        pthread_mutex_destroy(&accounts[i].lock);
     }
 
     return 0;

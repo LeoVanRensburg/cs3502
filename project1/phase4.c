@@ -7,7 +7,7 @@
 #define NUM_ACCOUNTS 2
 #define NUM_THREADS 2
 #define INITIAL_BALANCE 1000.0
-#define TRANSACTION_AMOUNT 30
+#define TRANSACTION_AMOUNT 10000
 
 // Shared data structure
 typedef struct {
@@ -21,12 +21,16 @@ typedef struct {
 Account accounts[NUM_ACCOUNTS];
 
 void transfer (int from_id, int to_id, double amount) {
+    printf("Thread %ld: Attempting transfer from %d to %d\n", pthread_self(), from_id, to_id);
+
     // Always lock lower ID first
     int first = (from_id < to_id) ? from_id : to_id;
     int second = (from_id < to_id) ? to_id : from_id;
 
     pthread_mutex_lock(&accounts[first].lock);
+    printf("Thread %ld: Locked account %d\n", pthread_self(), first);
     pthread_mutex_lock(&accounts[second].lock);
+    printf("Thread %ld: Locked account %d\n", pthread_self(), second);
 
     // Perform transfer
     accounts[from_id].balance -= amount;

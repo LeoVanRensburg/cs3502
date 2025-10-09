@@ -2,11 +2,13 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <time.h>
+#include <unistd.h>
 
 #define NUM_ACCOUNTS 5
 #define NUM_THREADS 500
 #define TRANSACTIONS_PER_TELLER 500
 #define INITIAL_BALANCE 1000.0
+#define PRINT_WORK 0
 
 // Shared data structure
 typedef struct {
@@ -36,17 +38,19 @@ void* teller_thread(void* arg) {
         // Perform deposit or withdrawal
         // THIS WILL HAVE RACE CONDITIONS!
         if (rand_r(&seed) % 2 == 0) {
-            // printf("Thread %d: Depositing %.2f\n", teller_id, deposit_amount);
             accounts[selected_account].balance += deposit_amount;
+            usleep(100);
+            if (PRINT_WORK)
+                printf("Thread %d: Depositing %.2f\n", teller_id, deposit_amount);
         } 
         else {
-             // printf("Thread %d: Withdrawing %.2f\n", teller_id, withdraw_amount);
-             accounts[selected_account].balance -= withdraw_amount;
+            accounts[selected_account].balance -= withdraw_amount;
+            usleep(100);
+            if (PRINT_WORK)
+                printf("Thread %d: Withdrawing %.2f\n", teller_id, withdraw_amount);
          }
 
-        accounts[selected_account].transaction_count++;
-        
-        // printf("Teller %d: Transaction %d\n", teller_id, i);
+        accounts[selected_account].transaction_count++;        
     }
     
     return NULL;
@@ -59,7 +63,9 @@ int main() {
         accounts[i].transaction_count = 0;
     }
 
-    printf("Initial balance of account 0: %.2f\n", accounts[0].balance);
+    for (int i = 0; i < NUM_ACCOUNTS; i++) {
+        printf("Initial balance for account %d: %.2f\n", i+1, accounts[i].balance);
+    }
 
     // Creating threads (see Appendix \ref{sec:voidpointer} for void * explanation)
     pthread_t threads[NUM_THREADS];
@@ -74,7 +80,9 @@ int main() {
         pthread_join(threads[i], NULL);
     }
 
-    printf("Final balance: %.2f\n", accounts[0].balance);
+    for (int i = 0; i < NUM_ACCOUNTS; i++) {
+        printf("Final balance for account %d: %.2f\n", i+1, accounts[i].balance);
+    }
 
     return 0;
 }

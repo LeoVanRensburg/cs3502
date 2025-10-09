@@ -7,7 +7,7 @@
 #define NUM_ACCOUNTS 2
 #define NUM_THREADS 2
 #define INITIAL_BALANCE 1000.0
-#define TRANSACTION_AMOUNT 30
+#define TRANSACTION_AMOUNT 1
 
 // Shared data structure
 typedef struct {
@@ -31,7 +31,13 @@ void transfer(int from_id, int to_id, double amount) {
     usleep(100);
 
     printf("Thread %ld: Waiting for account %d\n", pthread_self(), to_id);
-    pthread_mutex_lock(&accounts[to_id].lock);
+    time_t start = time ( NULL ) ;
+    while (pthread_mutex_trylock(&accounts[to_id].lock) != 0) {
+        if (time(NULL) - start > 5) {
+            printf("Possible deadlock detected !\n");
+            break;
+        }
+   }
 
     // If we get here, no deadlock occurred this time
     accounts[from_id].balance -= amount;
@@ -47,7 +53,7 @@ void* teller_thread(void* arg) {
 
     for (int i = 0; i < TRANSACTION_AMOUNT; i++) {
         if (teller_id == 0) {
-            transfer(0, 1, 100.0);
+            transfer(0, 1, 50.0);
         } else {
             transfer(1, 0, 50.0);
         }

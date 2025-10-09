@@ -2,11 +2,13 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <time.h>
+#include <unistd.h>
 
 #define NUM_ACCOUNTS 5
-#define NUM_THREADS 500
-#define TRANSACTIONS_PER_TELLER 500
+#define NUM_THREADS 1000
+#define TRANSACTIONS_PER_TELLER 1000
 #define INITIAL_BALANCE 1000.0
+#define PRINT_WORK 0
 
 // Shared data structure
 typedef struct {
@@ -20,17 +22,17 @@ typedef struct {
 Account accounts[NUM_ACCOUNTS];
 
 void deposit(int account_id, double amount) {
-    pthread_mutex_lock(&accounts[account_id].lock);
+    // pthread_mutex_lock(&accounts[account_id].lock);
     accounts[account_id].balance += amount;
     accounts[account_id].transaction_count++;
-    pthread_mutex_unlock(&accounts[account_id].lock);
+    // pthread_mutex_unlock(&accounts[account_id].lock);
 }
 
 void withdraw(int account_id, double amount) {
-    pthread_mutex_lock(&accounts[account_id].lock);
+    // pthread_mutex_lock(&accounts[account_id].lock);
     accounts[account_id].balance -= amount;
     accounts[account_id].transaction_count++;
-    pthread_mutex_unlock(&accounts[account_id].lock);
+    // pthread_mutex_unlock(&accounts[account_id].lock);
 }
 
 // Thread function
@@ -52,9 +54,13 @@ void* teller_thread(void* arg) {
         // THIS WILL HAVE RACE CONDITIONS!
         if (rand_r(&seed) % 2 == 0) {
             deposit(selected_account, deposit_amount);
+            if (PRINT_WORK)
+                printf("Thread %d: Depositing %.2f\n", teller_id, deposit_amount);
         } 
         else {
              withdraw(selected_account, withdraw_amount);
+             if (PRINT_WORK)
+                printf("Thread %d: Withdrawing %.2f\n", teller_id, withdraw_amount);
          }
         
         // printf("Teller %d: Transaction %d\n", teller_id, i);
@@ -71,7 +77,9 @@ int main() {
         accounts[i].transaction_count = 0;
     }
 
-    printf("Initial balance of account 0: %.2f\n", accounts[0].balance);
+    for (int i = 0; i < NUM_ACCOUNTS; i++) {
+        printf("Initial balance for account %d: %.2f\n", i+1, accounts[i].balance);
+    }
 
     // Creating threads (see Appendix \ref{sec:voidpointer} for void * explanation)
     pthread_t threads[NUM_THREADS];
@@ -86,7 +94,9 @@ int main() {
         pthread_join(threads[i], NULL);
     }
 
-    printf("Final balance: %.2f\n", accounts[0].balance);
+    for (int i = 0; i < NUM_ACCOUNTS; i++) {
+        printf("Final balance for account %d: %.2f\n", i+1, accounts[i].balance);
+    }
 
     return 0;
 }

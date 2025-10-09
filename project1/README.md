@@ -12,7 +12,6 @@ gcc phase1.c -pthread -o phase1.o && gcc phase2.c -pthread -o phase2.o & gcc pha
 
 ## Approaches to Each Phase
 
-
 ### Phase 1:
 For phase 1, I decided to modify the banker example that was provided. It uses a set seed to deposit and withdraw the same amount of money with every run of the program. 
 However, if you run the program, you will notice different results with each run due

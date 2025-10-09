@@ -17,7 +17,7 @@ For phase 1, I decided to modify the banker example that was provided. It uses a
 However, if you run the program, you will notice different results with each run due
 to race conditions when accessing the user's account.
 To consistently get race conditions to activate, I needed 500 threads and 500 operations per teller.
-  
+
 ### Phase 2:
 I copied my program from phase 1, and made the deposit and withdraw
 logic use mutex locks to lock the account before it performs an operation
@@ -34,3 +34,7 @@ the account they are trying to transfer from first, causing a deadlock.
 I used the lock ordering solution to resolve the deadlock. The program
 looks at both account IDs and finds the lower one. It then attempts to
 lock the lower account ID first, preventing a deadlock.
+
+## Optional Changes
+### Phase 1:
+For phase 1, you can change any of the variables that are defined

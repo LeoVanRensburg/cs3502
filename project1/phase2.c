@@ -5,10 +5,10 @@
 #include <unistd.h>
 
 #define NUM_ACCOUNTS 5
-#define NUM_THREADS 1000
-#define TRANSACTIONS_PER_TELLER 1000
+#define NUM_THREADS 500
+#define TRANSACTIONS_PER_TELLER 500
 #define INITIAL_BALANCE 1000.0
-#define PRINT_WORK 0
+#define PRINT_WORK 1
 
 // Shared data structure
 typedef struct {
@@ -22,17 +22,17 @@ typedef struct {
 Account accounts[NUM_ACCOUNTS];
 
 void deposit(int account_id, double amount) {
-    // pthread_mutex_lock(&accounts[account_id].lock);
+    pthread_mutex_lock(&accounts[account_id].lock);
     accounts[account_id].balance += amount;
     accounts[account_id].transaction_count++;
-    // pthread_mutex_unlock(&accounts[account_id].lock);
+    pthread_mutex_unlock(&accounts[account_id].lock);
 }
 
 void withdraw(int account_id, double amount) {
-    // pthread_mutex_lock(&accounts[account_id].lock);
+    pthread_mutex_lock(&accounts[account_id].lock);
     accounts[account_id].balance -= amount;
     accounts[account_id].transaction_count++;
-    // pthread_mutex_unlock(&accounts[account_id].lock);
+    pthread_mutex_unlock(&accounts[account_id].lock);
 }
 
 // Thread function

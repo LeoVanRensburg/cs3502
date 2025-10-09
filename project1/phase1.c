@@ -8,7 +8,7 @@
 #define NUM_THREADS 500
 #define TRANSACTIONS_PER_TELLER 500
 #define INITIAL_BALANCE 1000.0
-#define PRINT_WORK 0
+#define PRINT_WORK 1
 
 // Shared data structure
 typedef struct {

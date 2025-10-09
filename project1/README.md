@@ -37,4 +37,13 @@ lock the lower account ID first, preventing a deadlock.
 
 ## Optional Changes
 ### Phase 1:
-For phase 1, you can change any of the variables that are defined
+You can change any of the variables that are defined at the top of the file. The most useful one is changing whether you want the program to print what it's doing to each account or not. Disabling this is important for measuring time, as printing what it's significantly increases the programs run time.
+
+### Phase 2:
+You can change any of the variables that are defined at the top of the file. The most useful one is changing whether you want the program to print what it's doing to each account or not. Disabling this is important for measuring time, as printing what it's significantly increases the programs run time.
+
+### Phase 3:
+You can change the processing delay in the `transfer()` function to make a deadlock less or more likely to occur. At 100 nanoseconds, it's almost guaranteed to happen every time from my testing.
+
+### Phase 4: 
+Not much can be changed in this phase of the project to change its functionality. 
